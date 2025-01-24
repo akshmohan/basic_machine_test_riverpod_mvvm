@@ -70,29 +70,26 @@ class HomePage extends ConsumerWidget {
       // The body changes based on the selected tab index.
       body: currentIndex == 0
           ? // If the selected tab is "Profile" (index 0):
-            const Center(
+          const Center(
               child: Text("Profile Page"), // Placeholder for the Profile tab.
             )
           : // If the selected tab is "Posts" (index 1):
-            postsViewModel.isLoadingPosts
-              ? // Show a loading spinner while posts are being fetched.
-                const Center(child: CircularProgressIndicator())
-              : // Show a list of posts when data is loaded.
-                ListView.builder(
-                  itemCount: postsViewModel.postsList.length, // Total number of posts.
+          postsViewModel.isLoadingPosts
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  itemCount: postsViewModel.postsList.length,
                   itemBuilder: (context, index) {
-                    final post = postsViewModel.postsList[index]; // Access each post.
+                    final post = postsViewModel.postsList[index];
                     return Card(
-                      elevation: 4, // Elevation for shadow effect.
+                      elevation: 4,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10), // Rounded corners.
+                        borderRadius: BorderRadius.circular(10),
                         side: BorderSide(
-                          color: Colors.grey.shade800, // Border color.
-                          width: 1.0, // Border width.
+                          color: Colors.grey.shade800,
+                          width: 1.0,
                         ),
                       ),
                       child: ListTile(
-                        // Display the post title.
                         title: Text(
                           post.title.toString(),
                           style: const TextStyle(
@@ -100,13 +97,11 @@ class HomePage extends ConsumerWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        // Display the post body.
                         subtitle: Text(post.body.toString()),
-                        // Display a circular avatar with the post ID.
                         leading: CircleAvatar(
-                          backgroundColor: Colors.blue, // Background color.
+                          backgroundColor: Colors.blue,
                           child: Text(
-                            post.id.toString(), // Post ID inside the avatar.
+                            post.id.toString(),
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.white,
