@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_unnecessary_containers, unused_field, prefer_final_fields
+// ignore_for_file: avoid_unnecessary_containers, unused_field, prefer_final_fields, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,20 +13,15 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the current tab index from the currentIndexProvider.
     final currentIndex = ref.watch(currentIndexProvider);
-
-    // Watch the state of the postsProvider (which likely holds data and loading state for posts).
     final postsViewModel = ref.watch(postsProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
         actions: [
-          // Logout button in the AppBar.
           IconButton(
             onPressed: () {
-              // Show a confirmation dialog for logout.
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -34,21 +29,16 @@ class HomePage extends ConsumerWidget {
                     title: const Text('Logout'),
                     content: const Text("Are you sure you want to logout?"),
                     actions: [
-                      // Option to cancel logout and close the dialog.
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog.
+                          Navigator.of(context).pop();
                         },
                         child: const Text("No"),
                       ),
-                      // Option to confirm logout.
                       TextButton(
                         onPressed: () {
-                          // Trigger the logout action through the authenticationProvider.
                           ref.read(authenticationProvider.notifier).logout();
-                          Navigator.of(context).pop(); // Close the dialog.
-
-                          // Navigate to the LoginPage after logout.
+                          Navigator.of(context).pop();
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -63,18 +53,53 @@ class HomePage extends ConsumerWidget {
                 },
               );
             },
-            icon: const Icon(Icons.logout), // Logout icon.
+            icon: const Icon(Icons.logout),
           ),
         ],
       ),
-      // The body changes based on the selected tab index.
       body: currentIndex == 0
-          ? // If the selected tab is "Profile" (index 0):
-          const Center(
-              child: Text("Profile Page"), // Placeholder for the Profile tab.
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(
+                          
+                          color: Colors.grey.shade800,
+                          width: 1.0,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                            'Username: ${ref.watch(authenticationProvider).username}'),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(
+                          color: Colors.grey.shade800,
+                          width: 1.0,
+                        )),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                            'Token: ${ref.watch(authenticationProvider).accessToken}'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             )
-          : // If the selected tab is "Posts" (index 1):
-          postsViewModel.isLoadingPosts
+          : postsViewModel.isLoadingPosts
               ? const Center(child: CircularProgressIndicator())
               : ListView.builder(
                   itemCount: postsViewModel.postsList.length,
@@ -112,23 +137,17 @@ class HomePage extends ConsumerWidget {
                     );
                   },
                 ),
-      // Bottom navigation bar with the "Profile" tab first and "Posts" tab second.
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Fixed style navigation bar.
-        currentIndex: currentIndex, // The current selected tab index.
+        type: BottomNavigationBarType.fixed,
+        currentIndex: currentIndex,
         onTap: (index) {
-          // Update the selected tab index using the currentIndexProvider.
           ref.read(currentIndexProvider.notifier).state = index;
-
-          // Automatically fetch posts when the "Posts" tab (index 1) is selected.
           if (index == 1) {
             ref.read(postsProvider.notifier).getAllPosts();
           }
         },
         items: const [
-          // First tab for "Profile".
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          // Second tab for "Posts".
           BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Posts'),
         ],
       ),

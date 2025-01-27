@@ -1,6 +1,5 @@
 // ignore_for_file: file_names, prefer_final_fields, unused_field, no_leading_underscores_for_local_identifiers, avoid_print, unnecessary_null_comparison
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mvvm/models/user_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,10 +7,16 @@ import 'package:mvvm/repositories/auth_repository.dart';
 import 'package:mvvm/services/storage_service.dart';
 
 class AuthenticationViewmodel with ChangeNotifier {
+ 
+ String? _accessToken;
+ String? _username;
   bool _isAuthenticated = false;
   UserModel? _user;
   bool _isInitialized = false;
 
+ 
+  String? get accessToken => _accessToken;
+  String? get username => _username;
   bool get isAuthenticated => _isAuthenticated;
   UserModel? get user => _user;
   bool get isInitialized => _isInitialized;
@@ -24,9 +29,14 @@ class AuthenticationViewmodel with ChangeNotifier {
     try {
       final storageService = StorageService();
       final token = await storageService.getAccessToken();
+      final username = await storageService.getUsername();
       if (token != null) {
         _isAuthenticated = true;
-        _user = UserModel(accessToken: token);
+        _user = UserModel(accessToken: token, username: username);
+        _accessToken = token;
+        if(_user != null) {
+          _username = _user!.username;
+        }
       }
     } catch (_) {
       _isAuthenticated = false;
@@ -43,6 +53,9 @@ class AuthenticationViewmodel with ChangeNotifier {
       if (result["accessToken"] != null) {
         final storageServcice = StorageService();
         await storageServcice.saveAccessToken(result['accessToken']);
+        await storageServcice.saveUsername(username);
+        _accessToken = result['accessToken'];
+        _username = username;
         print(storageServcice);
       } else {
         throw Exception("Access token is null");

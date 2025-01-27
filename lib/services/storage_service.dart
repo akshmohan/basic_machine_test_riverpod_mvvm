@@ -9,6 +9,11 @@ class StorageService {
     await prefs.setString('accessToken', token);
   }
 
+  Future<void> saveUsername(String username) async{
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', username);
+  }
+
   Future<String> getAccessToken () async{
   final prefs = await SharedPreferences.getInstance();
   final accessToken = prefs.getString('accessToken');
@@ -16,6 +21,15 @@ class StorageService {
     throw Exception('Access token is null');
   }
   return accessToken;
+}
+
+Future<String> getUsername () async{
+  final prefs = await SharedPreferences.getInstance();
+  final username = prefs.getString('username');
+  if (username == null) {
+    throw Exception('Username is null');
+  }
+  return username;
 }
 
   Future<void> clearAccessToken () async{
